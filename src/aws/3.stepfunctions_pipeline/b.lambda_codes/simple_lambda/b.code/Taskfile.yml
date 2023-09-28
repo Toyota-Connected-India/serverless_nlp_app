@@ -1,0 +1,36 @@
+version: '3'
+
+env:
+  IAM_ROLE_ARN:
+    sh: (cat ../a.create_iam_role_and_policy/final_role_arn.txt | cut -d= -f2)
+  LAMBDA_FUNCTION_NAME: 
+    sh: basename $(dirname $PWD)
+  ENVIRONMENT_JSON: environment.json
+    
+dotenv: ['.env_for_creating_lambda']
+
+tasks:
+  paste_credentials_from_copied_clipboard:
+    cmds:
+      - pbpaste > ~/.aws/credentials
+    silent: false
+  
+  set_up_credentials:
+    cmds:
+      - export REGION=$REGION
+      - export AWS_PROFILE=$(cat ~/.aws/credentials | head -n 1 | cut -c 2- | rev | cut -c 2- | rev)
+      - export AWS_ACCOUNT_ID=$(echo $AWS_PROFILE | awk -F'_' '{print $1}')
+      - aws configure set region $REGION --profile $AWS_PROFILE
+    silent: false
+  
+  create_lambda_name:
+    cmds:
+      - zip -r ${LAMBDA_FUNCTION_NAME}.zip lambda_function.py
+      - bash aws_cli_command_for_lambda_creation.bash $LAMBDA_FUNCTION_NAME $IAM_ROLE_ARN $SPACY_LAYER
+    silent: false
+  
+  update_lambda_function_code:
+    cmds:
+      - zip -r ${LAMBDA_FUNCTION_NAME}.zip lambda_function.py
+      - aws lambda update-function-code --function-name ${LAMBDA_FUNCTION_NAME} --zip-file fileb://./${LAMBDA_FUNCTION_NAME}.zip
+    silent: false

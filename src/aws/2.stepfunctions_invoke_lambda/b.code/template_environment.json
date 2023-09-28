@@ -1,0 +1,8 @@
+{
+    "Variables": {
+        "ACCOUNT_ID":"<account_id>",
+        "STATE_MACHINE_NAME": "PII_NLP_pipeline",
+        "INTERMEDIARY_BUCKET_NAME": "pycon-$USER-nlp-intermediary-output-bkt",
+        "FINAL_BUCKET_NAME": "pycon-$USER-nlp-output-bkt"
+    }
+}

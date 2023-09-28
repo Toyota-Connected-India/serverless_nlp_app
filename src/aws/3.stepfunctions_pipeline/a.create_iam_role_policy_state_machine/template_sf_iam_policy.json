@@ -1,0 +1,25 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "lambda:InvokeFunction"
+            ],
+            "Resource": [
+                "arn:aws:lambda:<region>:<account_id>:function:simple_lambda:*",
+                "arn:aws:lambda:<region>:<account_id>:function:layer_lambda:*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "lambda:InvokeFunction"
+            ],
+            "Resource": [
+                "arn:aws:lambda:<region>:<account_id>:function:simple_lambda",
+                "arn:aws:lambda:<region>:<account_id>:function:layer_lambda"
+            ]
+        }
+    ]
+}

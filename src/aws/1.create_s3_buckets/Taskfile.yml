@@ -1,0 +1,49 @@
+version: '3'
+
+env:
+# the buckets need to be globally unique, hence I have added $USER to it, name them anyway you want
+  bkt_1: 
+    sh: echo pycon-$USER-nlp-trigger-bkt
+  bkt_2: 
+    sh: echo pycon-$USER-nlp-output-bkt
+  bkt_3: 
+    sh: echo pycon-$USER-nlp-intermediary-output-bkt
+
+# below config file has value for $REGION variable
+dotenv: ['.env_for_s3_bkts']
+
+
+
+tasks:
+  paste_credentials_from_copied_clipboard:
+    cmds:
+      - # if you are using linux and have vim editor, 
+      - # 'vi ~/.aws/credentials' and copy the AWS credentials from
+      - # from your aws_sso_start url like https://my-sso-portal.awsapps.com/start
+      - # or from your private aws account
+      - pbpaste > ~/.aws/credentials
+    silent: false
+  
+  set_up_credentials:
+    cmds:
+      - export AWS_PROFILE=$(cat ~/.aws/credentials | head -n 1 | cut -c 2- | rev | cut -c 2- | rev)
+      - export AWS_ACCOUNT_ID=$(echo $AWS_PROFILE | awk -F'_' '{print $1}')
+      - aws configure set region $REGION --profile $AWS_PROFILE
+    silent: false
+  
+  create_s3_bucket:
+    env:
+      acl: private
+      # do not see a need for any one else to read the bucket, hence private
+    cmds:
+      - aws s3api create-bucket --bucket $bkt_1 --region $REGION --acl private --create-bucket-configuration LocationConstraint=$REGION
+      - aws s3api create-bucket --bucket $bkt_2 --region $REGION --acl private --create-bucket-configuration LocationConstraint=$REGION
+      - aws s3api create-bucket --bucket $bkt_3 --region $REGION --acl private --create-bucket-configuration LocationConstraint=$REGION
+    silent: false
+  
+  clean_up:
+    cmds:
+    # use it with caution
+      - aws s3api delete-bucket --bucket $bkt_1
+      - aws s3api delete-bucket --bucket $bkt_2
+      - aws s3api delete-bucket --bucket $bkt_3

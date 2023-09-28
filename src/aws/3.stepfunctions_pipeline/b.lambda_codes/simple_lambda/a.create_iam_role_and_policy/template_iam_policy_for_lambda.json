@@ -1,0 +1,39 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::*/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:<region>:<account_id>:log-group:/aws/lambda/*:*"
+    },
+    {
+      "Sid": "LambdaLayerPermissions",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:GetLayerVersion",
+        "lambda:ListLayerVersions",
+        "lambda:PublishLayerVersion"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

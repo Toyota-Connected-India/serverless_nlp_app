@@ -1,0 +1,20 @@
+{
+    "executions": [
+        {
+            "executionArn": "arn:aws:states:<region>:<account_id>:execution:PII_NLP_pipeline:196be785--email_2",
+            "stateMachineArn": "arn:aws:states:<region>:<account_id>:stateMachine:PII_NLP_pipeline",
+            "name": "196be785--email_2",
+            "status": "SUCCEEDED",
+            "startDate": 1695548453.575,
+            "stopDate": 1695548459.852
+        },
+        {
+            "executionArn": "arn:aws:states:<region>:<account_id>:execution:PII_NLP_pipeline:d47b01f7--email_1",
+            "stateMachineArn": "arn:aws:states:<region>:<account_id>:stateMachine:PII_NLP_pipeline",
+            "name": "d47b01f7--email_1",
+            "status": "SUCCEEDED",
+            "startDate": 1695548428.618,
+            "stopDate": 1695548442.051
+        }
+    ]
+}

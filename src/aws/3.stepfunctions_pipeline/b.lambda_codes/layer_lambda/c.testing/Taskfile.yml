@@ -1,0 +1,57 @@
+version: '3'
+
+env:
+  
+  lambda_function_name: 
+    sh: basename $(dirname $PWD)
+
+tasks:
+  run_test_event_1:
+    env:
+      file_name: email_1.txt
+      test_event: test_event_1.json
+    cmds:
+      - echo "Processing {{.TASK}}"
+      - sed -e "s|\$USER|$USER|g" template_${test_event} > $test_event
+      - |
+        (aws lambda invoke \
+        --function-name "$lambda_function_name" \
+        --invocation-type 'RequestResponse' \
+        --payload file://${test_event} \
+        output.json && cat output.json | jq) > "output_"{{.TASK}}".json" && \
+        cat "output_"{{.TASK}}".json"
+      - rm output.json
+    silent: false
+  
+  download_test_event_1:
+    env:
+      file_name: email_1.txt
+    cmds:
+      - aws s3 cp s3://pycon-$USER-nlp-output-bkt/$file_name final_output_${file_name}
+      - cat final_output_${file_name}
+    silent: false
+
+  run_test_event_2:
+    env:
+      file_name: email_2.txt
+      test_event: test_event_2.json
+    cmds:
+      - echo "Processing {{.TASK}}"
+      - sed -e "s|\$USER|$USER|g" template_${test_event} > $test_event
+      - |
+        (aws lambda invoke \
+        --function-name "$lambda_function_name" \
+        --invocation-type 'RequestResponse' \
+        --payload file://${test_event} \
+        output.json && cat output.json | jq) > "output_"{{.TASK}}".json" && \
+        cat "output_"{{.TASK}}".json"
+      - rm output.json
+    silent: false
+  
+  download_test_event_2:
+    env:
+      file_name: email_2.txt
+    cmds:
+      - aws s3 cp s3://pycon-$USER-nlp-output-bkt/$file_name final_output_${file_name}
+      - cat final_output_${file_name}
+    silent: false

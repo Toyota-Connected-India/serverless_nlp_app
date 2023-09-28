@@ -1,0 +1,67 @@
+version: '3'
+
+env:
+  final_lambda_policy_json_file: final_iam_policy_for_lambda.json
+  template_lambda_policy_json_file: template_iam_policy_for_lambda.json
+  policy_name: rws3_cloudwatch_layer_lambda
+  role_name: 
+    sh: basename $(dirname $PWD)
+  lambda_function_name: 
+    sh: basename $(dirname $PWD)
+
+# get $region and $account_id from the hidden file below
+# the below file is not pushed to git, but it looks like below
+# region="your-region"
+# account_id="account_id"
+
+dotenv: ['.env_for_IAM_policy']
+
+
+tasks:
+  paste_credentials_from_copied_clipboard:
+    cmds:
+      - pbpaste > ~/.aws/credentials
+    silent: false
+  
+  set_up_credentials:
+    cmds:
+      - export REGION=$region
+      - export AWS_PROFILE=$(cat ~/.aws/credentials | head -n 1 | cut -c 2- | rev | cut -c 2- | rev)
+      - export AWS_ACCOUNT_ID=$(echo $AWS_PROFILE | awk -F'_' '{print $1}')
+      - aws configure set region $REGION --profile $AWS_PROFILE
+    silent: false
+  
+  prepare_policy_from_template:
+    cmds:
+      - echo $final_lambda_policy_json_file
+      - sed -e "s|<account_id>|$account_id|g" -e "s|<region>|$region|g" $template_lambda_policy_json_file > $final_lambda_policy_json_file
+    silent: false
+  
+  create_policy:
+    cmds:
+      - aws iam create-policy --policy-name $policy_name --policy-document file://${final_lambda_policy_json_file}
+    silent: false
+  
+  create_role:
+    env:
+      trust_policy_json: trust-policy.json
+    cmds:
+      - aws iam create-role --role-name $role_name --assume-role-policy-document file://${trust_policy_json}
+    silent: false
+  
+  attach_policy_to_role:
+    cmds:
+      - aws iam attach-role-policy --role-name $role_name --policy-arn "arn:aws:iam::${account_id}:policy/${policy_name}"
+    silent: false
+  
+  add_updated_policy_to_role:
+    cmds:
+      - aws iam detach-role-policy --role-name $role_name --policy-arn "arn:aws:iam::${account_id}:policy/${policy_name}"
+      - aws iam delete-policy --policy-arn "arn:aws:iam::${account_id}:policy/${policy_name}"
+      - aws iam create-policy --policy-name $policy_name --policy-document file://${final_lambda_policy_json_file}
+      - aws iam attach-role-policy --policy-arn "arn:aws:iam::${account_id}:policy/${policy_name}" --role-name $role_name
+    silent: false
+  
+  get_role_arn:
+    cmds:
+      - echo "ROLE_ARN=$(aws iam get-role --role-name $role_name --query "Role.Arn" --output text)" > final_role_arn.txt

@@ -1,0 +1,69 @@
+version: '3'
+
+env:
+  IAM_ROLE_ARN:
+    sh: (cat ../a.create_iam_role_and_policy/final_role_arn.txt | cut -d= -f2)
+  LAMBDA_FUNCTION_NAME: 
+    # you can also hard-code the lambda name as `stepfunctions_invoke_lambda`
+    sh: basename $(dirname $PWD) | sed -E "s|[0-9]+.||g"
+  ENVIRONMENT_JSON: environment.json
+  s3_bucket_to_trigger_this_lambda:
+    sh: echo "pycon-$USER-nlp-trigger-bkt"
+  
+dotenv: ['.env_for_creating_lambda']
+
+tasks:
+  paste_credentials_from_copied_clipboard:
+    cmds:
+      - pbpaste > ~/.aws/credentials
+    silent: false
+  
+  set_up_credentials:
+    cmds:
+      - export REGION=$REGION
+      - export AWS_PROFILE=$(cat ~/.aws/credentials | head -n 1 | cut -c 2- | rev | cut -c 2- | rev)
+      - export AWS_ACCOUNT_ID=$(echo $AWS_PROFILE | awk -F'_' '{print $1}')
+      - aws configure set region $REGION --profile $AWS_PROFILE
+    silent: false
+  
+  create_lambda_name:
+    cmds:
+      - zip -r ${LAMBDA_FUNCTION_NAME}.zip lambda_function.py
+      - bash aws_cli_command_for_lambda_creation.bash $LAMBDA_FUNCTION_NAME $IAM_ROLE_ARN
+    silent: false
+  
+  delete_lambda_name:
+    cmds:
+      - aws lambda delete-function --function-name ${LAMBDA_FUNCTION_NAME}
+    silent: false
+
+  update_lambda_function_code:
+    cmds:
+      - zip -r ${LAMBDA_FUNCTION_NAME}.zip lambda_function.py
+      - aws lambda update-function-code --function-name ${LAMBDA_FUNCTION_NAME} --zip-file fileb://./${LAMBDA_FUNCTION_NAME}.zip
+    silent: false
+  
+  update_lambda_function_configuration_environment:
+    cmds:
+      - aws lambda update-function-configuration --function-name ${LAMBDA_FUNCTION_NAME} --environment file://./${ENVIRONMENT_JSON}
+    silent: false
+
+  add_s3_trigger:
+    cmds:
+      - |
+        sed -e "s|<region>|$region|g" \
+        -e "s|<account_id>|$account_id|g" \
+        -e "s|<lambda_function_name>|${LAMBDA_FUNCTION_NAME}|g" \
+        template_s3_trigger_to_lambda_config.json > final_s3_trigger_to_lambda_config.json
+      - |
+        aws lambda add-permission \
+        --function-name $LAMBDA_FUNCTION_NAME \
+        --statement-id S3TriggerTo${LAMBDA_FUNCTION_NAME} \
+        --action "lambda:InvokeFunction" \
+        --principal s3.amazonaws.com \
+        --source-arn arn:aws:s3:::${s3_bucket_to_trigger_this_lambda}
+      - |
+        aws s3api put-bucket-notification-configuration \
+        --bucket ${s3_bucket_to_trigger_this_lambda} \
+        --notification-configuration file://final_s3_trigger_to_lambda_config.json
+    silent: false

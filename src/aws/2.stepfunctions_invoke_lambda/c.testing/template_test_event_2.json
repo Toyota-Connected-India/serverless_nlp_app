@@ -1,0 +1,14 @@
+{
+    "Records": [
+      {
+        "s3": {
+          "bucket": {
+            "name": "pycon-$USER-nlp-trigger-bkt"
+          },
+          "object": {
+            "key": "email_2.txt"
+          }
+        }
+      }
+    ]
+  }

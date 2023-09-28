@@ -1,0 +1,16 @@
+{
+    "Comment": "Process a TXT file and redact PII",
+    "StartAt": "Remove Phone and Email",
+    "States": {
+      "Remove Phone and Email": {
+        "Type": "Task",
+        "Resource": "arn:aws:lambda:<region>:<account_id>:function:simple_lambda",
+        "Next": "Remove Names"
+      },
+      "Remove Names": {
+        "Type": "Task",
+        "Resource": "arn:aws:lambda:<region>:<account_id>:function:layer_lambda",
+        "End":true
+      }
+    }
+}

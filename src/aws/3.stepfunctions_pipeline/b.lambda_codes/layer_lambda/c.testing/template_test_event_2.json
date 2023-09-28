@@ -1,0 +1,5 @@
+{
+    "input_bucket_name": "pycon-$USER-nlp-intermediary-output-bkt",
+    "output_bucket_name": "pycon-$USER-nlp-output-bkt",
+    "file_key": "email_2.txt"
+}

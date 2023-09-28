@@ -1,0 +1,42 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "states:StartExecution",
+          "states:DescribeExecution",
+          "states:GetExecutionHistory"
+        ],
+        "Resource": [
+          "arn:aws:states:<region>:<account-id>:stateMachine:*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": "logs:CreateLogStream",
+        "Resource": "arn:aws:logs:<region>:<account-id>:log-group:*:*"
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "logs:PutLogEvents",
+          "logs:CreateLogGroup"
+        ],
+        "Resource": [
+          "arn:aws:logs:<region>:<account-id>:log-group:*:log-stream:*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+        ],
+        "Resource": [
+          "arn:aws:s3:::*/*"
+        ]
+      }
+    ]
+  }
+  

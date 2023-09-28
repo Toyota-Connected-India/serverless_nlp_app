@@ -1,0 +1,9 @@
+{
+    "LambdaFunctionConfigurations": [
+        {
+          "Id": "s3eventtriggerslambda",
+          "LambdaFunctionArn": "arn:aws:lambda:<region>:<account_id>:function:<lambda_function_name>",
+          "Events": ["s3:ObjectCreated:*"]
+        }
+      ]
+}
