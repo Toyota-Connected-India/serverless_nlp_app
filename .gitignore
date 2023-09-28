@@ -1,0 +1,6 @@
+*.zip
+.DS_Store
+output_*_test*.json
+test_event_*.json
+final_*.*
+.ipynb_checkpoints
