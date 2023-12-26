@@ -15,21 +15,24 @@ dotenv: ['.env_for_s3_bkts']
 
 
 tasks:
-  paste_credentials_from_copied_clipboard:
-    cmds:
-      - # if you are using linux and have vim editor, 
-      - # 'vi ~/.aws/credentials' and copy the AWS credentials from
-      - # from your aws_sso_start url like https://my-sso-portal.awsapps.com/start
-      - # or from your private aws account
-      - pbpaste > ~/.aws/credentials
-    silent: false
+  # the below two tasks `paste_credentials_from_copied_clipboard` and `set_up_credentials` will not work
+  # as go-task creates a separate shell window and exports the arguments there and terminates that shell
+  # copy and use it in your shell window directly
+  # paste_credentials_from_copied_clipboard:
+  #   cmds:
+  #     - # if you are using linux and have vim editor, 
+  #     - # 'vi ~/.aws/credentials' and copy the AWS credentials from
+  #     - # from your aws_sso_start url like https://my-sso-portal.awsapps.com/start
+  #     - # or from your private aws account
+  #     - pbpaste > ~/.aws/credentials
+  #   silent: false
   
-  set_up_credentials:
-    cmds:
-      - export AWS_PROFILE=$(cat ~/.aws/credentials | head -n 1 | cut -c 2- | rev | cut -c 2- | rev)
-      - export AWS_ACCOUNT_ID=$(echo $AWS_PROFILE | awk -F'_' '{print $1}')
-      - aws configure set region $REGION --profile $AWS_PROFILE
-    silent: false
+  # set_up_credentials:
+  #   cmds:
+  #     - export AWS_PROFILE=$(cat ~/.aws/credentials | head -n 1 | cut -c 2- | rev | cut -c 2- | rev)
+  #     - export AWS_ACCOUNT_ID=$(echo $AWS_PROFILE | awk -F'_' '{print $1}')
+  #     - aws configure set region $REGION --profile $AWS_PROFILE
+  #   silent: false
   
   create_s3_bucket:
     env:
