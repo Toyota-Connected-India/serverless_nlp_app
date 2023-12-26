@@ -5,9 +5,12 @@
 
 ## II. What is built in this repo?
 
-![](./docs/images/pii_redaction_pipeline_architecture.png)
+![](docs/images/pii_redaction_pipeline_architecture.png)
 
-- Note: This pipeline is intentionally made simple for showing AWS CLI and Taskfile. Real-world Serverless Pipelines could be much more complex
+Note: 
+- If the above image is not visible, pls visit [here](https://toyota-connected-india.github.io/serverless_nlp_app/notebook/serverless_nlp_python_app_slides.slides.html#/8)
+
+- This pipeline is intentionally made simple for showing AWS CLI and Taskfile. Real-world Serverless Pipelines could be much more complex
 
 <hr>
 
@@ -15,7 +18,7 @@
 ## III. How are the AWS Lambdas, Stepfunctions and S3 buckets provisioned? - Using AWS CLI commands in Taskfiles
 
 
-![](./docs/images/Taskfile_Workflow_Layer_Lambda_Example.png)
+![](docs/images/Taskfile_Workflow_Layer_Lambda_Example.png)
 
 (note: this is Step 3 of the 5 step workflow described in this [PyCon Talk](https://toyota-connected-india.github.io/serverless_nlp_app/notebook/serverless_nlp_python_app_slides.slides.html#/10))
 
