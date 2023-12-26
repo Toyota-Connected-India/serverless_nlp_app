@@ -20,7 +20,10 @@ Note:
 
 ![](docs/images/Taskfile_Workflow_Layer_Lambda_Example.png)
 
-(note: this is Step 3 of the 5 step workflow described in this [PyCon Talk](https://toyota-connected-india.github.io/serverless_nlp_app/notebook/serverless_nlp_python_app_slides.slides.html#/10))
+Note: 
+- If the above image is not visible, pls visit [here](https://toyota-connected-india.github.io/serverless_nlp_app/notebook/serverless_nlp_python_app_slides.slides.html#/11/1)
+
+- This is Step 3 of the 5 step workflow described in this [PyCon Talk](https://toyota-connected-india.github.io/serverless_nlp_app/notebook/serverless_nlp_python_app_slides.slides.html#/10)
 
 - AWS CLI has been used here. The taskfiles group the relevant AWS CLI commands
 - You could also try the AWS CloudFormation or Terraform for provisioning the same infrastructure. 
